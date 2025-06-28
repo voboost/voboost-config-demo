@@ -1,0 +1,10 @@
+# VoBoost Config Demo - Project Intelligence
+
+## Language Policy (CRITICAL)
+- ALL code comments MUST be in English
+- ALL documentation MUST be in English
+- ALL variable names, function names, class names MUST be in English
+- ALL error messages MUST be in English
+- Configuration VALUES can support multiple languages including Russian
+- This policy is documented in memory bank and must be maintained
+

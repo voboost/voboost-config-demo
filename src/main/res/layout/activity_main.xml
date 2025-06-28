@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- Reload Button -->
+    <Button
+        android:id="@+id/reloadButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reload_config"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.Material3.Button" />
+
+    <!-- Scrollable Configuration Display -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="?android:attr/selectableItemBackground"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/configTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/loading_config"
+            android:textSize="14sp"
+            android:fontFamily="monospace"
+            android:textColor="?android:attr/textColorPrimary"
+            android:lineSpacingExtra="4dp"
+            android:padding="12dp"
+            android:background="@drawable/config_text_background" />
+
+    </ScrollView>
+
+    <!-- Instructions -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:layout_marginTop="16dp"
+        android:textAlignment="center"
+        android:textColor="?android:attr/textColorSecondary" />
+
+</LinearLayout>

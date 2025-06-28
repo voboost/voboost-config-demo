@@ -1,0 +1,21 @@
+# Voboost Configuration Demo
+# This file demonstrates all available configuration options
+# You can modify these values and see changes in real-time in the demo app
+
+settings:
+  # Language settings: ru, en
+  language: en
+
+  # Theme settings: auto, light, dark
+  theme: dark
+
+  # Interface positioning adjustments
+  interface-shift-x: 0
+  interface-shift-y: 0
+
+vehicle:
+  # Fuel mode options: intellectual, electric, fuel, save
+  fuel-mode: electric
+
+  # Drive mode options: eco, comfort, sport, snow, outing, individual
+  drive-mode: individual
