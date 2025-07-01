@@ -1,10 +1,6 @@
 package ru.voboost.config.demo
 
-import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
@@ -22,7 +18,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 class MainActivity : AppCompatActivity(), OnConfigChangeListener {
-
     private lateinit var configTextView: TextView
     private lateinit var statusTextView: TextView
     private lateinit var reloadButton: Button
@@ -88,7 +83,10 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         )
     }
 
-    private fun displayConfig(config: Config, diff: Config? = null) {
+    private fun displayConfig(
+        config: Config,
+        diff: Config? = null
+    ) {
         val spannableText = SpannableStringBuilder()
 
         spannableText.appendLine("=== VOBOOST CONFIG DEMO ===")
@@ -128,19 +126,21 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         spannableText.appendLine(line)
 
         // Check if this field was changed by dynamically checking the field path in diff
-        val isChanged = configManager.isFieldChanged(diff, fieldPath);
+        val isChanged = configManager.isFieldChanged(diff, fieldPath)
 
         // Apply color based on whether this field was changed
-        val color = if (isChanged) {
-            ContextCompat.getColor(this, R.color.config_changed_text) // Red for changed
-        } else {
-            ContextCompat.getColor(this, android.R.color.black) // Black for unchanged
-        }
+        val color =
+            if (isChanged) {
+                ContextCompat.getColor(this, R.color.config_changed_text) // Red for changed
+            } else {
+                ContextCompat.getColor(this, android.R.color.black) // Black for unchanged
+            }
 
         spannableText.setSpan(
             ForegroundColorSpan(color),
             startIndex,
-            spannableText.length - 1, // -1 to exclude the newline
+            // -1 to exclude the newline
+            spannableText.length - 1,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
     }
@@ -158,7 +158,10 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         )
     }
 
-    override fun onConfigChanged(newConfig: Config, diff: Config) {
+    override fun onConfigChanged(
+        newConfig: Config,
+        diff: Config
+    ) {
         runOnUiThread {
             try {
                 // Check if this diff has any actual changes using ConfigManager's universal method
@@ -216,15 +219,21 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
     }
 
     private enum class StatusType {
-        SUCCESS, ERROR, UPDATE
+        SUCCESS,
+        ERROR,
+        UPDATE
     }
 
-    private fun showStatus(message: String, type: StatusType) {
-        val color = when (type) {
-            StatusType.SUCCESS -> ContextCompat.getColor(this, android.R.color.holo_green_dark)
-            StatusType.ERROR -> ContextCompat.getColor(this, android.R.color.holo_red_dark)
-            StatusType.UPDATE -> ContextCompat.getColor(this, android.R.color.holo_blue_dark)
-        }
+    private fun showStatus(
+        message: String,
+        type: StatusType
+    ) {
+        val color =
+            when (type) {
+                StatusType.SUCCESS -> ContextCompat.getColor(this, android.R.color.holo_green_dark)
+                StatusType.ERROR -> ContextCompat.getColor(this, android.R.color.holo_red_dark)
+                StatusType.UPDATE -> ContextCompat.getColor(this, android.R.color.holo_blue_dark)
+            }
         statusTextView.text = message
         statusTextView.setTextColor(color)
     }
@@ -266,4 +275,3 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
-

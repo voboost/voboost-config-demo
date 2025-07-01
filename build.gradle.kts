@@ -1,7 +1,11 @@
 plugins {
     id("com.android.application") version "8.7.3"
     id("org.jetbrains.kotlin.android") version "1.9.25"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
+
+// Apply Voboost code style configuration
+apply(from = "../voboost-codestyle/codestyle.gradle")
 
 android {
     namespace = "ru.voboost.config.demo"

@@ -1,19 +1,11 @@
-# VoBoost Config Demo - Project Intelligence
+# Voboost Config Demo - Project Intelligence
 
-## Language Policy (CRITICAL)
-- ALL code comments MUST be in English
-- ALL documentation MUST be in English
-- ALL variable names, function names, class names MUST be in English
-- ALL error messages MUST be in English
-- Configuration VALUES can support multiple languages including Russian
-- This policy is documented in memory bank and must be maintained
+## Global Rules (CRITICAL)
+- This project follows ALL common rules from ../voboost-codestyle/.clinerules
+- The rules below are PROJECT-SPECIFIC additions to the global rules
+- NEVER duplicate global rules here - they are inherited automatically
 
-## Naming Convention (CRITICAL)
-- Project name is ALWAYS "Voboost" (not "VoBoost")
-- Use "Voboost" in all documentation, comments, and user-facing text
-- This applies to titles, headers, and any references to the project name
-
-## Project Patterns
+## Project-Specific Patterns
 
 ### Application Architecture
 - MainActivity as single activity demonstrating all library features
@@ -67,18 +59,10 @@
 - Minimum API 28 (Android 9)
 - Target SDK 34 for latest Android compatibility
 
-## Development Workflow
-- Memory bank MUST be updated when discovering new patterns
-- All project information MUST be stored in memory bank, not in separate files
+## Development Workflow (Project-Specific)
 - Demo app should always demonstrate latest library features
 - UI changes should maintain professional appearance and usability
 - All changes should follow Android development best practices
-
-## Information Management Rules
-- NEVER create separate documentation files outside memory bank
-- All technical details, implementation notes, and project updates go in memory-bank/
-- Use memory bank files for all project knowledge preservation
-- Keep external files minimal and focused only on immediate technical needs
 - Maintain independence from main library's memory bank
 
 ## Project Status
@@ -97,13 +81,7 @@
 - Educational value for developers learning library usage
 - Production-ready implementation patterns
 
-## Code Style Rules
-- ALL source code files MUST end with a blank line to avoid "No newline at end of file" warnings in diffs
-- This applies to .kt, .java, .xml, .yaml, .md and all other text files
-- Always add empty line at the end when creating or modifying files
-- NO EMOJI in any files - use plain text only for all documentation and code
-
-## Visual Design Patterns
+## Visual Design Patterns (Project-Specific)
 - Red color (#FF0000) for changed configuration fields
 - Black color for unchanged configuration fields
 - Green color for success status messages
