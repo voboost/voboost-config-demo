@@ -1,351 +1,322 @@
-# VoBoost Config Demo
+# Voboost Config Demo
 
-This is a comprehensive demo application that showcases the functionality of the `voboost-config` library. The demo provides hands-on examples of configuration loading, real-time updates, and diff tracking with multiple testing methods.
+A comprehensive demonstration Android application that showcases the functionality of the `voboost-config` library. This demo provides real-time visual feedback for configuration changes with red color highlighting and professional user interface.
 
 ## Features
 
-- **Configuration Loading**: Demonstrates how to load YAML configuration files using the library
-- **Real-time Updates**: Shows configuration changes in real-time when the config file is modified
-- **Diff Tracking**: Displays which specific fields have changed when configuration is updated
-- **User-friendly Interface**: Simple UI to view current configuration and reload manually
-- **Multiple Testing Methods**: Support for Logcat monitoring and Device File Explorer testing
-- **Error Handling**: Demonstrates proper error handling and recovery
+- **Real-time Configuration Display**: Shows current configuration values with professional formatting
+- **Visual Change Highlighting**: Changed fields appear in red color, unchanged in black
+- **File System Integration**: Demonstrates Android asset and private storage operations
+- **Manual Reload**: Button to manually reload configuration for testing
+- **Error Handling**: Robust error management with user-friendly messages
+- **Production Quality**: Professional Android application demonstrating best practices
 
 ## Quick Start
 
-1. **Install and Run**: Build and install the demo app on your Android device (API 28+)
-2. **View Configuration**: The app displays the current configuration loaded from `config.yaml`
-3. **Test Real-time Updates**: Use any of the testing methods below to modify configuration
-4. **Observe Changes**: Watch the UI update automatically and check Logcat for detailed logs
-
-## Testing Methods
-
-### Method 1: Testing via Logcat (Recommended for Development)
-
-This method provides detailed logging information and is ideal for understanding the library's behavior.
-
-#### Setup
-1. Connect your Android device via USB with USB Debugging enabled
-2. Open Android Studio or use ADB command line
-3. Filter Logcat by the demo app package: `ru.voboost.config.demo`
-
-#### Testing Steps
-1. **Launch the app** and observe initial configuration loading logs:
-   ```
-   D/ConfigDemo: Configuration loaded successfully
-   D/ConfigDemo: Language: EN, Theme: AUTO
-   D/ConfigDemo: Vehicle - Fuel: INTELLECTUAL, Drive: COMFORT
+1. **Build and Install**:
+   ```bash
+   ./gradlew assembleDebug
+   ./gradlew installDebug
    ```
 
-2. **Start file watching** (automatic on app start):
-   ```
-   D/ConfigDemo: Started watching configuration file
-   ```
+2. **Launch Application**: The app automatically loads configuration from assets and starts file watching
 
-3. **Modify configuration** using Device File Explorer (see Method 2)
+3. **View Configuration**: See current configuration values displayed with clear formatting
 
-4. **Observe change detection logs**:
-   ```
-   D/ConfigDemo: Configuration changed!
-   D/ConfigDemo: Language changed from EN to RU
-   D/ConfigDemo: Diff - Language: RU, Theme: null, Fuel: null, Drive: null
-   ```
+4. **Test Real-time Updates**: Modify the configuration file and watch immediate visual feedback
 
-#### What to Look For
-- **Loading Success/Failure**: Initial configuration load status
-- **File Watching Status**: Whether file watching started successfully
-- **Change Detection**: Real-time change notifications
-- **Diff Information**: Precise field-level change tracking
-- **Error Handling**: How the library handles invalid YAML or missing files
+## Application Structure
 
-### Method 2: Testing via Device File Explorer
+### Main Components
 
-This method allows direct file manipulation and is excellent for testing various configuration scenarios.
+- **MainActivity**: Single activity implementing `OnConfigChangeListener`
+- **Configuration Display**: Scrollable text view with monospace font
+- **Reload Button**: Manual configuration reload functionality
+- **Toast Notifications**: User feedback for operations
+- **Real-time Monitoring**: Automatic file change detection
 
-#### Accessing the Configuration File
+### UI Layout
 
-1. **Open Android Studio** and ensure your device is connected
-2. **Navigate to Device File Explorer**:
-   - View → Tool Windows → Device File Explorer
-   - Or use the Device File Explorer tab at the bottom
+```xml
+<LinearLayout>
+    <!-- App Header -->
+    <TextView android:text="Voboost Config Demo" />
 
-3. **Locate the configuration file**:
-   ```
-   /data/data/ru.voboost.config.demo/files/config.yaml
-   ```
+    <!-- Manual Reload Button -->
+    <Button android:id="@+id/reloadButton" />
 
-4. **Download the file**:
-   - Right-click on `config.yaml`
-   - Select "Save As..." to download to your computer
+    <!-- Scrollable Configuration Display -->
+    <ScrollView>
+        <TextView android:id="@+id/configTextView"
+                  android:fontFamily="monospace" />
+    </ScrollView>
 
-#### Testing Scenarios
+    <!-- Instructions -->
+    <TextView android:text="Modify config.yaml to see real-time changes" />
+</LinearLayout>
+```
 
-##### Scenario 1: Language Change
-1. **Edit the downloaded file**:
+## Configuration File Location
+
+The application copies the default configuration from assets to:
+```
+/data/data/ru.voboost.config.demo/files/config.yaml
+```
+
+## Testing Real-time Updates
+
+### Method 1: Android Studio Device File Explorer
+
+1. **Open Device File Explorer** in Android Studio
+2. **Navigate to**: `/data/data/ru.voboost.config.demo/files/config.yaml`
+3. **Download the file** (right-click → Save As...)
+4. **Edit the configuration**:
    ```yaml
    settings:
-     language: ru  # Change from 'en' to 'ru'
-     theme: auto
-     interface-shift-x: 0
-     interface-shift-y: 0
-
-   vehicle:
-     fuel-mode: intellectual
-     drive-mode: comfort
-   ```
-
-2. **Upload the modified file**:
-   - Right-click on the `config.yaml` in Device File Explorer
-   - Select "Upload..." and choose your modified file
-
-3. **Observe the app**: Language setting should update immediately
-
-##### Scenario 2: Theme Change
-1. **Modify theme setting**:
-   ```yaml
-   settings:
-     language: en
-     theme: dark  # Change from 'auto' to 'dark'
-     interface-shift-x: 0
-     interface-shift-y: 0
-
-   vehicle:
-     fuel-mode: intellectual
-     drive-mode: comfort
-   ```
-
-2. **Upload and observe**: Theme preference should update
-
-##### Scenario 3: Vehicle Settings Change
-1. **Modify vehicle settings**:
-   ```yaml
-   settings:
-     language: en
-     theme: auto
-     interface-shift-x: 0
-     interface-shift-y: 0
-
-   vehicle:
-     fuel-mode: electric-forced  # Change fuel mode
-     drive-mode: sport          # Change drive mode
-   ```
-
-2. **Upload and observe**: Both vehicle settings should update
-
-##### Scenario 4: Interface Positioning
-1. **Modify interface positioning**:
-   ```yaml
-   settings:
-     language: en
-     theme: auto
-     interface-shift-x: 25   # Add horizontal offset
-     interface-shift-y: -10  # Add vertical offset
-
-   vehicle:
-     fuel-mode: intellectual
-     drive-mode: comfort
-   ```
-
-2. **Upload and observe**: Interface positioning values should update
-
-##### Scenario 5: Multiple Changes
-1. **Change multiple fields simultaneously**:
-   ```yaml
-   settings:
-     language: ru
-     theme: dark
-     interface-shift-x: 15
+     language: "ru"        # Change from "en" to "ru"
+     theme: "dark"         # Change theme
+     interface-shift-x: 10 # Change positioning
      interface-shift-y: 5
 
    vehicle:
-     fuel-mode: save
-     drive-mode: eco
+     fuel-mode: "electric" # Change fuel mode
+     drive-mode: "sport"   # Change drive mode
    ```
+5. **Upload modified file** (right-click → Upload...)
+6. **Observe immediate changes** - modified fields appear in red color
 
-2. **Upload and observe**: All changed fields should be detected in the diff
+### Method 2: ADB Commands
 
-#### Error Testing Scenarios
+```bash
+# Pull current configuration
+adb pull /data/data/ru.voboost.config.demo/files/config.yaml
 
-##### Invalid YAML Syntax
-1. **Create invalid YAML**:
-   ```yaml
-   settings:
-     language: en
-     theme: auto
-     interface-shift-x: 0
-   # Missing closing for settings section
-   vehicle:
-     fuel-mode: intellectual
-   ```
+# Edit the file locally, then push back
+adb push config.yaml /data/data/ru.voboost.config.demo/files/config.yaml
+```
 
-2. **Upload and observe**: App should handle the error gracefully
-
-##### Invalid Enum Values
-1. **Use invalid enum values**:
-   ```yaml
-   settings:
-     language: spanish  # Invalid language
-     theme: auto
-     interface-shift-x: 0
-     interface-shift-y: 0
-
-   vehicle:
-     fuel-mode: invalid-mode  # Invalid fuel mode
-     drive-mode: comfort
-   ```
-
-2. **Upload and observe**: App should handle invalid values
-
-### Method 3: Manual Configuration Testing
-
-Use the app's built-in "Reload Configuration" button to test manual configuration loading.
-
-#### Steps
-1. **Modify configuration file** using Device File Explorer
-2. **Don't wait for automatic detection**
-3. **Tap "Reload Configuration"** button in the app
-4. **Observe immediate update** and check Logcat for manual reload logs
-
-## Configuration Structure Reference
-
-The demo uses a comprehensive configuration structure:
+## Configuration Structure
 
 ### Settings Section
 ```yaml
 settings:
-  language: en          # Language: ru, en
-  theme: auto          # Theme: auto, light, dark
-  interface-shift-x: 0 # Horizontal offset: integer pixels
-  interface-shift-y: 0 # Vertical offset: integer pixels
+  language: "ru"          # Language: ru, en
+  theme: "dark"           # Theme: auto, light, dark
+  interface-shift-x: 0    # Horizontal offset (integer)
+  interface-shift-y: 0    # Vertical offset (integer)
 ```
 
 ### Vehicle Section
 ```yaml
 vehicle:
-  fuel-mode: intellectual    # Fuel modes: intellectual, electric, electric-forced, fuel, save
-  drive-mode: comfort       # Drive modes: eco, comfort, sport, snow, outing, individual
+  fuel-mode: "electric"   # Fuel modes: intellectual, electric, fuel, save
+  drive-mode: "sport"     # Drive modes: eco, comfort, sport, snow, outing, individual
 ```
 
-## File Locations
+## Visual Feedback System
 
-### Configuration File
+### Color Highlighting
+- **Red Text (#D32F2F)**: Fields that changed in the last update
+- **Black Text**: Unchanged fields
+- **Immediate Updates**: Changes appear instantly when file is modified
+
+### Display Format
 ```
+=== VOBOOST CONFIG DEMO ===
+
+SETTINGS:
+  settings.language: ru          ← Red if changed
+  settings.theme: dark           ← Red if changed
+  settings.interfaceShiftX: 0    ← Black if unchanged
+  settings.interfaceShiftY: 0    ← Black if unchanged
+
+VEHICLE:
+  vehicle.fuelMode: electric     ← Red if changed
+  vehicle.driveMode: sport       ← Red if changed
+
+Configuration file location:
 /data/data/ru.voboost.config.demo/files/config.yaml
+
+You can modify the config.yaml file and see changes in real-time!
 ```
 
-### App Data Directory
-```
-/data/data/ru.voboost.config.demo/
-```
+## Library Integration Example
 
-## Library Integration Examples
+This demo shows how to integrate the voboost-config library:
 
-This demo shows comprehensive integration patterns:
-
-### Basic Configuration Loading
+### Basic Setup
 ```kotlin
-private val configManager = ConfigManager()
+class MainActivity : AppCompatActivity(), OnConfigChangeListener {
+    private val configManager = ConfigManager()
+    private val configFileName = "config.yaml"
 
-private fun loadConfiguration() {
-    val result = configManager.loadConfig(this, "config.yaml")
-    result.onSuccess { config ->
-        Log.d("ConfigDemo", "Configuration loaded successfully")
-        displayConfiguration(config)
-    }.onFailure { error ->
-        Log.e("ConfigDemo", "Failed to load configuration", error)
-        showError("Failed to load configuration: ${error.message}")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        initViews()
+        copyDefaultConfigIfNeeded()
+        loadAndDisplayConfig()
+        startWatchingConfig()
     }
 }
 ```
 
-### Real-time Configuration Watching
+### Configuration Loading
 ```kotlin
-private val configChangeListener = object : OnConfigChangeListener {
-    override fun onConfigChanged(newConfig: Config, diff: Config) {
-        runOnUiThread {
-            Log.d("ConfigDemo", "Configuration changed!")
+private fun loadAndDisplayConfig() {
+    val result = configManager.loadConfig(this, configFileName)
 
-            // Log specific changes
-            diff.settingsLanguage?.let { newLanguage ->
-                Log.d("ConfigDemo", "Language changed to: $newLanguage")
-            }
-            diff.settingsTheme?.let { newTheme ->
-                Log.d("ConfigDemo", "Theme changed to: $newTheme")
-            }
-
-            // Update UI with new configuration
-            displayConfiguration(newConfig)
+    result.fold(
+        onSuccess = { config ->
+            displayConfig(config)
+            showToast("Configuration loaded successfully")
+        },
+        onFailure = { error ->
+            configTextView.text = "Error loading configuration:\n${error.message}"
+            showToast("Failed to load configuration")
         }
-    }
-}
-
-private fun startWatching() {
-    val result = configManager.startWatching(this, "config.yaml", configChangeListener)
-    result.onSuccess {
-        Log.d("ConfigDemo", "Started watching configuration file")
-    }.onFailure { error ->
-        Log.e("ConfigDemo", "Failed to start watching", error)
-    }
+    )
 }
 ```
 
-### Lifecycle Management
+### Real-time Change Detection
+```kotlin
+override fun onConfigChanged(newConfig: Config, diff: Config) {
+    runOnUiThread {
+        displayConfig(newConfig, diff)
+    }
+}
+
+private fun startWatchingConfig() {
+    val result = configManager.startWatching(this, configFileName, this)
+    result.fold(
+        onSuccess = {
+            showToast("Started watching configuration file")
+        },
+        onFailure = { error ->
+            showToast("Failed to start watching: ${error.message}")
+        }
+    )
+}
+```
+
+### Visual Highlighting Implementation
+```kotlin
+private fun appendConfigLine(
+    config: Config,
+    diff: Config?,
+    spannableText: SpannableStringBuilder,
+    fieldPath: String
+) {
+    val value = getFieldValue(config, fieldPath)
+    val line = "  $fieldPath: ${value ?: "Not set"}"
+    val startIndex = spannableText.length
+    spannableText.appendLine(line)
+
+    val isChanged = isFieldChanged(diff, fieldPath)
+    val color = if (isChanged) {
+        ContextCompat.getColor(this, R.color.config_changed_text) // Red
+    } else {
+        ContextCompat.getColor(this, android.R.color.black) // Black
+    }
+
+    spannableText.setSpan(
+        ForegroundColorSpan(color),
+        startIndex,
+        spannableText.length - 1,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+}
+```
+
+### Resource Cleanup
 ```kotlin
 override fun onDestroy() {
     super.onDestroy()
     configManager.stopWatching()
-    Log.d("ConfigDemo", "Stopped watching configuration file")
 }
+```
+
+## Error Testing Scenarios
+
+### Invalid YAML Syntax
+Create malformed YAML to test error handling:
+```yaml
+settings:
+  language: "en"
+  theme: "auto"
+# Missing proper structure
+vehicle
+  fuel-mode: "electric"
+```
+
+### Invalid Enum Values
+Test with invalid enum values:
+```yaml
+settings:
+  language: "spanish"     # Invalid language
+  theme: "rainbow"        # Invalid theme
+
+vehicle:
+  fuel-mode: "nuclear"    # Invalid fuel mode
+  drive-mode: "flying"    # Invalid drive mode
 ```
 
 ## Troubleshooting
 
 ### Common Issues
 
-#### File Not Found
-- **Symptom**: "Configuration file does not exist" error
-- **Solution**: Ensure the app has run at least once to copy the initial config file
+**Configuration not updating:**
+- Check file permissions in Device File Explorer
+- Verify file was uploaded correctly
+- Try manual reload button
+- Check logcat for error messages
 
-#### Permission Denied
-- **Symptom**: Cannot access `/data/data/` directory
-- **Solution**: Use Device File Explorer in Android Studio, not a file manager app
+**File access denied:**
+- Use Android Studio Device File Explorer
+- Ensure USB debugging is enabled
+- Don't use third-party file managers
 
-#### Changes Not Detected
-- **Symptom**: File changes don't trigger updates
-- **Solution**:
-  1. Check Logcat for error messages
-  2. Verify file was uploaded correctly
-  3. Try manual reload button
-  4. Restart the app if necessary
-
-#### Invalid Configuration
-- **Symptom**: App shows error after file modification
-- **Solution**:
-  1. Check YAML syntax
-  2. Verify enum values are correct
-  3. Restore original configuration if needed
+**App crashes:**
+- Check logcat for detailed error information
+- Verify YAML syntax is correct
+- Restore original configuration if needed
 
 ### Debug Tips
 
-1. **Always check Logcat** for detailed error information
-2. **Use the manual reload button** to test configuration loading
-3. **Start with small changes** before testing complex modifications
-4. **Keep a backup** of the working configuration file
-5. **Test error scenarios** to understand library behavior
+1. **Monitor Logcat**: Filter by `ru.voboost.config.demo` for detailed logs
+2. **Use Manual Reload**: Test configuration loading without file watching
+3. **Start Simple**: Make small changes before complex modifications
+4. **Keep Backup**: Save working configuration before testing
 
 ## Requirements
 
-- **Android Version**: Android 9 (API 28) or higher
+- **Android API 28+** (Android 9.0 or higher)
 - **Development Tools**: Android Studio with Device File Explorer
-- **Device Setup**: USB Debugging enabled for file access
-- **Dependencies**: voboost-config library (automatically included)
+- **Device Setup**: USB debugging enabled for file access
+- **Dependencies**: voboost-config library (included automatically)
 
-## Next Steps
+## Project Structure
 
-After exploring this demo:
+```
+voboost-config-demo/
+├── src/main/
+│   ├── java/ru/voboost/config/demo/
+│   │   └── MainActivity.kt              # Main demonstration activity
+│   ├── res/
+│   │   ├── layout/activity_main.xml     # UI layout
+│   │   ├── values/colors.xml            # Color definitions
+│   │   └── drawable/                    # Background styling
+│   └── assets/config.yaml               # Default configuration
+├── build.gradle.kts                     # Build configuration
+└── memory-bank/                         # Project documentation
+```
 
-1. **Integrate the library** into your own project
-2. **Customize the configuration structure** for your needs
-3. **Implement proper error handling** based on the demo patterns
-4. **Add configuration validation** for your specific use cases
-5. **Consider configuration migration** strategies for app updates
+## Related Projects
+
+- **voboost-config**: Main library project (sibling directory)
+- **Documentation**: Complete memory bank with technical details
+- **Integration**: Production-ready patterns for real applications
+
+This demo application serves as both a validation of the voboost-config library and a comprehensive educational resource for Android developers implementing configuration management.

@@ -8,3 +8,126 @@
 - Configuration VALUES can support multiple languages including Russian
 - This policy is documented in memory bank and must be maintained
 
+## Naming Convention (CRITICAL)
+- Project name is ALWAYS "Voboost" (not "VoBoost")
+- Use "Voboost" in all documentation, comments, and user-facing text
+- This applies to titles, headers, and any references to the project name
+
+## Project Patterns
+
+### Application Architecture
+- MainActivity as single activity demonstrating all library features
+- ConfigManager integration following library best practices
+- Real-time UI updates using OnConfigChangeListener
+- Proper Android lifecycle management with resource cleanup
+
+### File Structure
+- Demo app code in src/main/java/ru/voboost/config/demo/
+- UI layouts and resources in standard Android res/ structure
+- Default configuration in assets/config.yaml
+- Independent memory bank documentation in memory-bank/
+- All build files use Kotlin DSL (.gradle.kts)
+
+### UI Implementation
+- SpannableStringBuilder for dynamic text formatting with color highlighting
+- Red color highlighting for changed configuration fields using ForegroundColorSpan
+- Monospace font for professional configuration display
+- Status messages with color coding (green=success, red=error, blue=update)
+
+### Integration Approach
+- voboost-config library as external dependency (project reference or Maven)
+- Result pattern for consistent error handling from library
+- File operations using Android Context.filesDir for private storage
+- Asset copying pattern for default configuration deployment
+
+## Critical Implementation Details
+
+### Real-time Visual Feedback
+- Changed configuration fields appear in red color immediately
+- Unchanged fields remain in standard black color
+- Uses diff parameter from OnConfigChangeListener to determine changes
+- Scalable design allows easy addition of new configuration fields
+
+### Configuration Display Pattern
+- Load configuration from assets on first run, copy to private directory
+- Display all configuration values in hierarchical format
+- Real-time monitoring through library's file watching capabilities
+- Graceful error handling with user-friendly status messages
+
+### Android Integration
+- Proper file system usage with Context.filesDir
+- UI thread safety with runOnUiThread for background callbacks
+- Resource cleanup in onDestroy() to prevent memory leaks
+- Standard Android app structure and conventions
+
+## Build System
+- Android application with voboost-config library dependency
+- Android Gradle Plugin 8.2.0
+- Kotlin 1.9.20
+- Minimum API 28 (Android 9)
+- Target SDK 34 for latest Android compatibility
+
+## Development Workflow
+- Memory bank MUST be updated when discovering new patterns
+- All project information MUST be stored in memory bank, not in separate files
+- Demo app should always demonstrate latest library features
+- UI changes should maintain professional appearance and usability
+- All changes should follow Android development best practices
+
+## Information Management Rules
+- NEVER create separate documentation files outside memory bank
+- All technical details, implementation notes, and project updates go in memory-bank/
+- Use memory bank files for all project knowledge preservation
+- Keep external files minimal and focused only on immediate technical needs
+- Maintain independence from main library's memory bank
+
+## Project Status
+- COMPLETE and PRODUCTION READY
+- Demonstrates all voboost-config library features
+- Professional-quality Android application
+- Real-time visual feedback system working
+- Comprehensive documentation complete
+- Ready for use as integration reference
+
+## Key Success Factors
+- Real-time configuration change detection with visual feedback
+- Professional Android UI with proper error handling
+- Complete library integration example
+- Independent project with standalone documentation
+- Educational value for developers learning library usage
+- Production-ready implementation patterns
+
+## Code Style Rules
+- ALL source code files MUST end with a blank line to avoid "No newline at end of file" warnings in diffs
+- This applies to .kt, .java, .xml, .yaml, .md and all other text files
+- Always add empty line at the end when creating or modifying files
+- NO EMOJI in any files - use plain text only for all documentation and code
+
+## Visual Design Patterns
+- Red color (#FF0000) for changed configuration fields
+- Black color for unchanged configuration fields
+- Green color for success status messages
+- Red color for error status messages
+- Blue color for update notification messages
+- Monospace font family for configuration text display
+- Rounded background with padding for configuration display area
+
+## Error Handling Patterns
+- Use Result pattern from voboost-config library consistently
+- Display user-friendly error messages in status text
+- Never crash on configuration errors - show error state instead
+- Log detailed errors for debugging while showing simple messages to users
+- Graceful degradation when configuration files are missing or invalid
+
+## File Operation Patterns
+- Copy default config from assets to filesDir on first run
+- Use Context.filesDir for all configuration file operations
+- Check file existence before operations to avoid crashes
+- Proper exception handling for all file I/O operations
+- Clean up resources and file watchers in activity lifecycle methods
+
+## UI Thread Safety Rules
+- All UI updates MUST happen on main thread using runOnUiThread
+- File watching callbacks come from background threads
+- Never block UI thread with file operations
+- Use proper Android patterns for background-to-UI communication

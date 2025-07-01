@@ -28,4 +28,6 @@
     <!-- Additional colors for config display -->
     <color name="config_background">#F5F5F5</color>
     <color name="config_border">#E0E0E0</color>
+    <color name="config_changed_text">#D32F2F</color>
 </resources>
+

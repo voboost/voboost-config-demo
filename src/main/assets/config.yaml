@@ -2,20 +2,18 @@
 # This file demonstrates all available configuration options
 # You can modify these values and see changes in real-time in the demo app
 
-settings:
-  # Language settings: ru, en
-  language: en
+# Language settings: ru, en
+settings-language: en
 
-  # Theme settings: auto, light, dark
-  theme: dark
+# Theme settings: auto, light, dark
+settings-theme: dark
 
-  # Interface positioning adjustments
-  interface-shift-x: 0
-  interface-shift-y: 0
+# Interface positioning adjustments
+settings-interface-shift-x: 0
+settings-interface-shift-y: 0
 
-vehicle:
-  # Fuel mode options: intellectual, electric, fuel, save
-  fuel-mode: electric
+# Fuel mode options: intellectual, electric, fuel, save
+vehicle-fuel-mode: electric
 
-  # Drive mode options: eco, comfort, sport, snow, outing, individual
-  drive-mode: individual
+# Drive mode options: eco, comfort, sport, snow, outing, individual
+vehicle-drive-mode: individual

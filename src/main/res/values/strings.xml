@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">VoBoost Config Demo</string>
+    <string name="app_name">Voboost Config Demo</string>
     <string name="reload_config">Reload Configuration</string>
     <string name="loading_config">Loading configuration...</string>
+    <string name="status_ready">Ready</string>
     <string name="instructions">Modify the config.yaml file in the app\'s internal storage to see real-time changes!</string>
 </resources>
