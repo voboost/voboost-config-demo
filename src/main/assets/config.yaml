@@ -5,14 +5,14 @@
 # Language settings: ru, en
 settings-language: en
 
-# Theme settings: auto, light, dark
+# Theme settings: light, dark
 settings-theme: dark
 
 # Interface positioning adjustments
 settings-interface-shift-x: 0
 settings-interface-shift-y: 0
 
-# Fuel mode options: intellectual, electric, fuel, save
+# Fuel mode options: electric, hybrid, save
 vehicle-fuel-mode: electric
 
 # Drive mode options: eco, comfort, sport, snow, outing, individual

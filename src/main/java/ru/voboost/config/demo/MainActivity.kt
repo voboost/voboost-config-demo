@@ -14,14 +14,12 @@ import ru.voboost.config.ConfigManager
 import ru.voboost.config.OnConfigChangeListener
 import ru.voboost.config.models.Config
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 
 class MainActivity : AppCompatActivity(), OnConfigChangeListener {
     private lateinit var configTextView: TextView
     private lateinit var statusTextView: TextView
     private lateinit var reloadButton: Button
-    private val configManager = ConfigManager()
+    private val configManager = ConfigManager(this)
     private val configFileName = "config.yaml"
     private var lastValidConfig: Config? = null
     private var lastValidDiff: Config? = null
@@ -32,9 +30,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
 
         initViews()
         setupListeners()
-        copyDefaultConfigIfNeeded()
-        loadAndDisplayConfig()
-        startWatchingConfig()
+        initializeConfigManager()
     }
 
     private fun initViews() {
@@ -45,46 +41,65 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
 
     private fun setupListeners() {
         reloadButton.setOnClickListener {
-            loadAndDisplayConfig()
+            reloadConfig()
         }
+    }
+
+    private fun initializeConfigManager() {
+        copyDefaultConfigIfNeeded()
+        loadAndDisplayConfig()
+        startWatchingConfig()
     }
 
     private fun copyDefaultConfigIfNeeded() {
-        val configFile = File(filesDir, configFileName)
-        if (!configFile.exists()) {
-            try {
-                assets.open(configFileName).use { inputStream ->
-                    FileOutputStream(configFile).use { outputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
-                }
-                showToast("Default configuration copied to app directory")
-            } catch (e: IOException) {
-                showToast("Failed to copy default configuration: ${e.message}")
-            }
-        }
-    }
-
-    private fun loadAndDisplayConfig() {
-        val result = configManager.loadConfig(this, configFileName)
-
+        val result = configManager.copyDefaultConfigIfNeeded()
         result.fold(
-            onSuccess = { config ->
-                lastValidConfig = config
-                lastValidDiff = null // Reset diff when manually reloading
-                displayConfig(config)
-                showStatus("Configuration loaded successfully", StatusType.SUCCESS)
+            onSuccess = {
+                showToast("Default configuration ready")
             },
             onFailure = { error ->
-                Log.e("MainActivity", "Failed to load configuration", error)
-                showConfigError("Error loading configuration: ${error.message}")
-                showStatus("Failed to load configuration: ${error.message}", StatusType.ERROR)
+                showToast("Failed to setup configuration: ${error.message}")
             }
         )
     }
 
+    private fun startWatchingConfig() {
+        val result = configManager.startWatching(this)
+
+        result.fold(
+            onSuccess = {
+                showToast("Started watching configuration file")
+            },
+            onFailure = { error ->
+                showToast("Failed to start watching: ${error.message}")
+            }
+        )
+    }
+
+    private fun loadAndDisplayConfig() {
+        val result = configManager.loadConfig()
+
+        result.fold(
+            onSuccess = { config ->
+                Log.d("MainActivity", "Configuration loaded successfully: $config")
+                lastValidConfig = config
+                lastValidDiff = null // Reset diff when manually reloading
+                displayConfig()
+                showStatus("Configuration loaded successfully", StatusType.SUCCESS)
+            },
+            onFailure = { error ->
+                Log.e("MainActivity", "Failed to load configuration", error)
+                showConfigError("Error loading configuration:\n${error.message}")
+                showStatus("Failed to load configuration", StatusType.ERROR)
+            }
+        )
+    }
+
+    private fun reloadConfig() {
+        loadAndDisplayConfig()
+    }
+
     private fun displayConfig(
-        config: Config,
         diff: Config? = null
     ) {
         val spannableText = SpannableStringBuilder()
@@ -93,19 +108,19 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         spannableText.appendLine()
 
         spannableText.appendLine("SETTINGS:")
-        appendConfigLine(config, diff, spannableText, "settingsLanguage")
-        appendConfigLine(config, diff, spannableText, "settingsTheme")
-        appendConfigLine(config, diff, spannableText, "settingsInterfaceShiftX")
-        appendConfigLine(config, diff, spannableText, "settingsInterfaceShiftY")
+        appendConfigLine(diff, spannableText, "settingsLanguage")
+        appendConfigLine(diff, spannableText, "settingsTheme")
+        appendConfigLine(diff, spannableText, "settingsInterfaceShiftX")
+        appendConfigLine(diff, spannableText, "settingsInterfaceShiftY")
         spannableText.appendLine()
 
         spannableText.appendLine("VEHICLE:")
-        appendConfigLine(config, diff, spannableText, "vehicleFuelMode")
-        appendConfigLine(config, diff, spannableText, "vehicleDriveMode")
+        appendConfigLine(diff, spannableText, "vehicleFuelMode")
+        appendConfigLine(diff, spannableText, "vehicleDriveMode")
         spannableText.appendLine()
 
         spannableText.appendLine("Configuration file location:")
-        spannableText.appendLine("${File(filesDir, configFileName).absolutePath}")
+        spannableText.appendLine("${File(dataDir, configFileName).absolutePath}")
         spannableText.appendLine()
         spannableText.appendLine("You can modify the config.yaml file and see changes in real-time!")
 
@@ -113,19 +128,18 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
     }
 
     private fun appendConfigLine(
-        config: Config,
         diff: Config?,
         spannableText: SpannableStringBuilder,
         fieldPath: String
     ) {
-        // Get field value using reflection
-        val value = configManager.getFieldValue(config, fieldPath)
+        // Get field value using ConfigManager's method
+        val value = configManager.getFieldValue(fieldPath)
 
         val line = "  $fieldPath: ${value ?: "Not set"}"
         val startIndex = spannableText.length
         spannableText.appendLine(line)
 
-        // Check if this field was changed by dynamically checking the field path in diff
+        // Check if this field was changed using ConfigManager's method
         val isChanged = configManager.isFieldChanged(diff, fieldPath)
 
         // Apply color based on whether this field was changed
@@ -145,18 +159,8 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         )
     }
 
-    private fun startWatchingConfig() {
-        val result = configManager.startWatching(this, configFileName, this)
-
-        result.fold(
-            onSuccess = {
-                showToast("Started watching configuration file")
-            },
-            onFailure = { error ->
-                showToast("Failed to start watching: ${error.message}")
-            }
-        )
-    }
+    // Note: Using ConfigManager.isFieldChanged() method instead of custom implementation
+    // This ensures consistency with the library's diff calculation logic
 
     override fun onConfigChanged(
         newConfig: Config,
@@ -164,37 +168,18 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
     ) {
         runOnUiThread {
             try {
-                // Check if this diff has any actual changes using ConfigManager's universal method
-                val hasChanges = configManager.hasDiffAnyChanges(diff)
-
-                // If no changes in diff, do nothing
-                if (!hasChanges) {
-                    return@runOnUiThread
-                }
-
-                // Validate the new config before accepting it
-                if (configManager.isValidConfig(newConfig)) {
-                    lastValidConfig = newConfig
-                    lastValidDiff = diff
-                    displayConfig(newConfig, diff)
-                    showStatus("Configuration updated", StatusType.UPDATE)
-                } else {
-                    // If config is invalid, show error but keep last valid config
-                    Log.w("MainActivity", "Invalid configuration detected")
-                    showConfigError("Invalid configuration detected")
-                    showStatus("Invalid configuration - keeping previous valid state", StatusType.ERROR)
-                    lastValidConfig?.let { config ->
-                        displayConfig(config, lastValidDiff)
-                    }
-                }
+                lastValidConfig = newConfig
+                lastValidDiff = diff
+                displayConfig(diff)
+                showStatus("Configuration updated", StatusType.UPDATE)
             } catch (e: Exception) {
                 Log.e("MainActivity", "Error processing config change", e)
                 showConfigError("Error processing configuration: ${e.message}")
                 showStatus("Configuration error: ${e.message}", StatusType.ERROR)
 
                 // Keep displaying the last valid config with highlighting if available
-                lastValidConfig?.let { config ->
-                    displayConfig(config, lastValidDiff)
+                lastValidConfig?.let {
+                    displayConfig(lastValidDiff)
                 }
             }
         }
@@ -207,8 +192,8 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
             showStatus("Configuration file contains errors - keeping previous valid state", StatusType.ERROR)
 
             // Keep displaying the last valid config if available
-            lastValidConfig?.let { config ->
-                displayConfig(config, lastValidDiff)
+            lastValidConfig?.let {
+                displayConfig(lastValidDiff)
             }
         }
     }
@@ -249,7 +234,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         errorText.appendLine("Please fix the configuration file and try again.")
         errorText.appendLine()
         errorText.appendLine("Configuration file location:")
-        errorText.appendLine("${File(filesDir, configFileName).absolutePath}")
+        errorText.appendLine("${File(dataDir, configFileName).absolutePath}")
         errorText.appendLine()
         errorText.appendLine("Expected format:")
         errorText.appendLine("settings-language: en|ru")
