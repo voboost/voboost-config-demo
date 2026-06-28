@@ -1,73 +1,76 @@
 # voboost-config-demo
 
-Android demo application showcasing [voboost-config](../voboost-config) library integration and real-time configuration monitoring.
+Reference Android application for the [voboost-config](../voboost-config)
+library. It loads a YAML configuration from assets, watches it for external
+changes, and renders the current values with red highlighting for fields that
+changed since the last reload.
 
-## What it does
+## Overview
 
-- Loads YAML configuration from assets, copies to app's private directory
-- Displays configuration values in a scrollable text view
-- Monitors configuration file changes in real-time
-- Highlights changed fields in red color when file is modified externally
-- Provides manual reload functionality
+The demo is a single-activity app that wires `ConfigManager` to a simple
+text view. It demonstrates the full library lifecycle: copy the default
+config from assets, load it, start watching, react to `onConfigChanged` /
+`onConfigError`, and clean up on destroy.
 
-## Key components
+## Features
 
-- [`MainActivity.kt`](src/main/java/ru/voboost/config/demo/MainActivity.kt) - Main activity implementing `OnConfigChangeListener`
-- [`config.yaml`](src/main/assets/config.yaml) - Default configuration with sample values
-- Real-time file watching through voboost-config library
-- Visual feedback using `SpannableStringBuilder` with color highlighting
+- YAML configuration loaded from `assets/config.yaml` into the app's private
+  data directory on first run
+- Real-time file change detection via voboost-config's `FileWatcher`
+- Visual highlighting of changed fields (red `ForegroundColorSpan`)
+- Manual reload button
+- `Result`-based error handling with user-facing status messages
 
-## Configuration structure
+## Relationship to the Voboost ecosystem
 
-```yaml
-# Language: ru, en
-settings-language: en
+This app isThis app isThis app isThis app isThis app isThis app isThis app fig),
+which in turn dependwhich in turn dependwhich in turn dependwhich in turn dependwhich in turipped here mirrors the field set consumed by the Voboost
+application (`voboostapplication (`voboostapplication (`voboostapplication (`voboostapplication ( eapplication (`voboostapplicaton applract that
+runs on the real vehicle.
 
-# Theme: light, dark
-settings-theme: dark
+## Build
 
-# Interface positioning
-settings-interface-shift-x: 0
-settings-interface-shift-y: 0
-
-# Vehicle settings
-vehicle-fuel-mode: electric    # electric, hybrid, save
-vehicle-drive-mode: individual # eco, comfort, sport, snow, outing, individual
-```
-
-## How to test real-time updates
-
-1. Install and run the app
-2. Use Android Studio Device File Explorer to navigate to:
-   `/data/data/ru.voboost.config.demo/config.yaml`
-3. Download the file, edit values, upload back
-4. Watch the app immediately highlight changed fields in red
-
-Alternative: Use ADB commands
-```bash
-adb pull /data/data/ru.voboost.config.demo/config.yaml
-# Edit the file
-adb push config.yaml /data/data/ru.voboost.config.demo/config.yaml
-```
-
-## Build and run
+The demo is a release-only Android application (the debug build variant is
+disabled). Build and install with:
 
 ```bash
-./gradlew assembleDebug
-./gradlew installDebug
+./gradlew assembleRelease
+./gradlew installRelease
+```
+
+Pass `Pass `Pass `Pass `Pass `Pass `Pabuggable` oPass `PaleasePass `Pass `Pass `Pass `Pass `Pass `Pabuggable` oPass `PaleasePass `Pass `Putput APK is named
+`voboost-config-demo.apk` (the `-release` suffix is stripped).
+
+## Testing real-ti## Testing real-ti## Testing real-ti## Testing real-ti## Testing rfr## Testing real
+   ```bash
+   adb pull /data/data/ru.voboost.config.demo/files/config.yam   adb pull /data/data/ru.voboost.confid `config.yaml`.
+4. Push it back:
+
+   ```bash
+   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/datya   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /datax:   adb push config.yaml ift   adb ehi   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/e    adb push config.yaml /data/datt-c   ig/README.md) for the full field
+reference.
+
+## Integrat##n example
+
+```kotlin
+val configManager = ConfigManager(context)
+
+configManager.copyDefaultConfigIfNeeded()
+configManager.loadConfig().fold(
+    onSuccess = { config -> displayConfig(config) },
+    onFailure = { error -> showError(error) },
+)
+
+val listener = object : OnConfigChangeListener {
+    override fun onConfigChanged(newConfig:     override fun onConfigChanged(newConfig:     override fun onConfigChanged(newConfig:     override fun onConfigChor(error: Exception)     overr runOnUiThread { showError(error) }
+    }
+}
+configManager.startWatching(listener)
 ```
 
 ## Requirements
 
 - Android API 28+
-- voboost-config library dependency (automatically included)
-- USB debugging enabled for file access testing
-
-## Technical details
-
-- Uses `ConfigManager.initialize()` with singleton pattern
-- Implements `OnConfigChangeListener` for real-time updates
-- File operations through Android `Context.dataDir`
-- UI updates on main thread via `runOnUiThread`
-- Proper resource cleanup in activity lifecycle
-- Error handling with Result pattern from library
+- A checkout of `voboost-config` and `voboost-components` as sibling
+  directories (the Gradle settings include them via relative paths)
+- USB debugging enabled for on-device file editing tests
