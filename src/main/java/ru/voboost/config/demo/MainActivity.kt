@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
             },
             onFailure = { error ->
                 showToast("Failed to setup configuration: ${error.message}")
-            }
+            },
         )
     }
 
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
             },
             onFailure = { error ->
                 showToast("Failed to start watching: ${error.message}")
-            }
+            },
         )
     }
 
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
                 Log.e("MainActivity", "Failed to load configuration", error)
                 showConfigError("Error loading configuration:\n${error.message}")
                 showStatus("Failed to load configuration", StatusType.ERROR)
-            }
+            },
         )
     }
 
@@ -99,9 +99,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         loadAndDisplayConfig()
     }
 
-    private fun displayConfig(
-        diff: Config? = null
-    ) {
+    private fun displayConfig(diff: Config? = null) {
         val spannableText = SpannableStringBuilder()
 
         spannableText.appendLine("=== VOBOOST CONFIG DEMO ===")
@@ -122,7 +120,9 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         spannableText.appendLine("Configuration file location:")
         spannableText.appendLine("${File(dataDir, configFileName).absolutePath}")
         spannableText.appendLine()
-        spannableText.appendLine("You can modify the config.yaml file and see changes in real-time!")
+        spannableText.appendLine(
+            "You can modify the config.yaml file and see changes in real-time!",
+        )
 
         configTextView.text = spannableText
     }
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
     private fun appendConfigLine(
         diff: Config?,
         spannableText: SpannableStringBuilder,
-        fieldPath: String
+        fieldPath: String,
     ) {
         // Get field value using ConfigManager's method
         val value = configManager.getFieldValue(fieldPath)
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
             startIndex,
             // -1 to exclude the newline
             spannableText.length - 1,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
         )
     }
 
@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
 
     override fun onConfigChanged(
         newConfig: Config,
-        diff: Config
+        diff: Config,
     ) {
         runOnUiThread {
             try {
@@ -189,7 +189,10 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
         runOnUiThread {
             Log.e("MainActivity", "Configuration parsing error", error)
             showConfigError("Configuration parsing error: ${error.message}")
-            showStatus("Configuration file contains errors - keeping previous valid state", StatusType.ERROR)
+            showStatus(
+                "Configuration file contains errors - keeping previous valid state",
+                StatusType.ERROR,
+            )
 
             // Keep displaying the last valid config if available
             lastValidConfig?.let {
@@ -206,12 +209,12 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
     private enum class StatusType {
         SUCCESS,
         ERROR,
-        UPDATE
+        UPDATE,
     }
 
     private fun showStatus(
         message: String,
-        type: StatusType
+        type: StatusType,
     ) {
         val color =
             when (type) {
@@ -250,7 +253,7 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
             ForegroundColorSpan(errorColor),
             0,
             errorText.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
         )
 
         configTextView.text = errorText
