@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application") version "8.7.3"
-    id("org.jetbrains.kotlin.android") version "1.9.25"
+    id("org.jetbrains.kotlin.android") version "2.0.21"
+    id("checkstyle")
+    id("com.diffplug.spotless") version "6.25.0"
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
@@ -24,10 +26,21 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            // Single release build; debug variant disabled below.
+            isDebuggable = (project.findProperty("debuggable")?.toString() == "true")
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
+        }
+    }
+
+    // Strip the build-type suffix from the output APK.
+    applicationVariants.all {
+        outputs.forEach { output ->
+            val apk = output as com.android.build.gradle.api.ApkVariantOutput
+            apk.outputFileName = apk.outputFileName.replace("-release", "")
         }
     }
 
@@ -36,13 +49,30 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
 
     buildFeatures {
         buildConfig = true
     }
+}
+
+// Release-only: drop the debug variant entirely. `./gradlew build` produces the
+// single release variant; `-Pdebuggable=true` flips release's isDebuggable.
+androidComponents {
+    beforeVariants { variant ->
+        variant.enable = variant.buildType != "debug"
+    }
+}
+
+// Unit tests for the single (release) variant.
+tasks.register("testUnit") {
+    group = "verification"
+    description = "Run unit tests (single release variant)"
+    dependsOn("testReleaseUnitTest")
 }
 
 dependencies {

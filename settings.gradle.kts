@@ -19,3 +19,7 @@ rootProject.name = "voboost-config-demo"
 // Include the voboost-config library as a subproject
 include(":voboost-config")
 project(":voboost-config").projectDir = file("../voboost-config")
+
+// voboost-config depends on voboost-components (Theme/Language enums)
+include(":voboost-components")
+project(":voboost-components").projectDir = file("../voboost-components")
