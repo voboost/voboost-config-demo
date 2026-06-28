@@ -1,170 +1,52 @@
 #
-# В интерфейсе будут следующие вкладки:
+# Voboost configuration file.
 #
-# Store          Магазин приложений
-# Applications   Настройки запуска приложений
-# Interface      Интерфейс машины (графический, голосовой, руль)
-# Vehicle        Машина как машина
-# Settings       Настройки самого voboost
-# Back >         Возврат в оригинальные настройки машины
+# Flat schema: every key maps directly to a field on the Config model
+# (see voboost-config Config.kt). Field names use kebab-case in YAML and
+# map to camelCase Kotlin properties (e.g. settings-language -> settingsLanguage).
 #
-# Все настройки в файле конфигурации раскладываются по этим категориям.
-#
-# В каждой опции, которая меняет поведение по умолчанию, есть пункт original.
-# Если включен original, то это это действие не переопределяется, просто пропускается.
+# All fields are optional; missing values are left null and the application
+# falls back to its own defaults.
 #
 
-# пока не знаю какие настройки могут быть нужны для раздела store
-store-:
-
-# DPI для всех приложений
-applications-dpi: large
-
-# Переопределяем или нет лаунчер
-applications-launcher: original, voboost
-
-# Отключение приложений через adb
-applications-disable:
-  com.chineese.app1
-  com.chineese.app2
-  com.chineese.app3
-
-# Не показываем эти оригинальные приложения в лаунчере
-applications-launcher-hide-original:
-  com.chineese.app1
-  com.chineese.app2
-  com.chineese.app3
-
-# Не показываем эти установленные приложения в лаунчере
-applications-launcher-hide-installed:
-  ru.vk.store
-
-# Меняем DNS, для каждой опции есть набор adb команд, которые выполнятся для этого пункта
-applications-dns: original, default, yandex, one
-# only adb commands allowed
-applications-dns_default:
-  settings put some1
-  settings put some2
-  settings put some3
-applications-dns_yandex:
-  settings put some1
-applications-dns_one:
-  settings put some1
-
-# Опции установленных приложений
-applications-options:
-  # имя пакета приложения
-  ru.yandex.yandexnavi:
-    # иконка для левой панели, grayscale делаем сами как и grayscale-inversed
-    icon-panel: default, grayscale, grayscale-inversed
-    # иконка для лаунчера, grayscale делаем сами как и grayscale-inversed
-    icon-launcher: default, grayscale, grayscale-inversed
-    # scale для приборки
-    scale-driver: small
-    scale-driver_small: 1.5 / 200
-    # scale для экранов
-    scale-screen: huge
-    scale-driver_huge: 2.5 / 300
-    # scale для виджета
-    scale-widget: normal
-    # full-screen — скрывает левую панель и налезает на верхнюю полоску статуса
-    # shift-left — отступает только слева и налезает на верхнюю полоску статуса
-    # shift-left-top — отступает слева и сверху
-    startup: full-screen, shift-left, shift-left-top
-
-# Русификация (и потенциально другие языки)
-interface-language: original, ru, de
-
-# Клавиатура
-interface-keyboard: original, disable-chinese, enable-russian
-
-# Перенос приложений между экранами
-interface-multidisplay: original, allow-for-all-applications
-
-# Исправление телефонных номеров
-interface-phone-numbers: original, always-full-number
-
-# Timezone ISO code
-interface-timezone: Moscow
-
-# Автостарт на центральном экране
-interface-screen-second-autostart: ru.yandex.yandexnavi
-
-# Нажатие на домик на левой панели
-interface-screen-second-panel-home: original
-# Долгое нажатие на домик на левой панели
-interface-screen-second-panel-home-longtap: original, back, stop-visible-application
-
-interface-screen-second-panel-app1: ru.yandex.yandexnavi
-interface-screen-second-panel-app1-longtap: original, move-application-to-driver-screen
-
-interface-screen-second-panel-app2: ru.yandex.music
-interface-screen-second-panel-app2-longtap: original, open-original-music-application
-
-interface-screen-second-panel-climate: original
-interface-screen-second-panel-climate-longtap: ru.voboost/.SettingsActivity # как переключиться на пункт vehicle ?
-
-interface-screen-second-panel-vehicle: original
-interface-screen-second-panel-vehicle-longtap: original
-
-interface-screen-second-panel-applications: original
-interface-screen-second-panel-applications-longtap: original, back, stop-visible-application
-
-# Автостарт на экране пассажира
-interface-screen-third-autostart: ru.fmplay
-interface-screen-third-panel-app1: ru.fmplay
-interface-screen-third-panel-app2: ru.vk.store
-interface-screen-third-panel-app3: ru.vk.store
-interface-screen-third-panel-app4: ru.vk.store
-interface-screen-third-panel-app5: ru.vk.store
-
-interface-widget-weather: original, enable-non-chineese-cities
-interface-widget-weather-key: XYZ
-
-vehicle-pedestrian-warning: original, off
-
-# Fuel mode options: original, electric, electric-forced, hybrid, save
-vehicle-fuel-mode: electric-forced
-
-# Drive mode options: original, restore-at-statup
-vehicle-drive-mode: original, restore-at-statup
-
-# Language settings: ru, en
+# Application display language. Free-form string, typically "en" or "ru".
 settings-language: en
 
-# Theme settings: auto, light, dark
-settings-theme: dark
+# Application theme. Free-form string, e.g. "free-dark" or "free-light".
+settings-theme: free-dark
 
-# Interface positioning adjustments, не уверен, что нужно
+# Horizontal interface positioning adjustment in pixels.
 settings-interface-shift-x: 0
+
+# Vertical interface positioning adjustment in pixels.
 settings-interface-shift-y: 0
 
-# При off запускается, читает конфиг и выходит
-# При hidden без внедрения в интерфейс машины
-settings-startup: off, hidden, interface
+# Tab that is active when the application starts.
+# Options: store | applications | interface | vehicle | settings
+settings-active-tab: interface
 
-settings-startup-launch:
-  some adb command1
-  some adb command2
-  some adb command3
+# Vehicle fuel/energy management mode.
+# Options: electric | electric_forced | hybrid | save
+vehicle-fuel-mode: electric
 
-# Настройки масштаба для приборки
-settings-scale-driver:
-  small: 1.3 / 130
-  normal: 1.3 / 160
-  large: 1.3 / 210
-  huge: 1.3 / 240
+# Vehicle driving behavior mode.
+# Options: eco | comfort | sport | snow | outing | individual
+vehicle-drive-mode: comfort
 
-# Настройки масштаба для экранов
-settings-scale-screen:
-  small: 1.3 / 130
-  normal: 1.3 / 160
-  large: 1.3 / 210
-  huge: 1.3 / 240
+# Russian keyboard feature setting. Free-form string, e.g. "enable-russian".
+interface-keyboard: enable-russian
 
-# Настройки масштаба для виджетов
-settings-scale-widget:
-  small: 1.3 / 130
-  normal: 1.3 / 160
-  large: 1.3 / 210
-  huge: 1.3 / 240
+# Weather widget feature setting. Free-form string, e.g. "enable-non-chineese-cities".
+interface-widget-weather: enable-non-chineese-cities
+
+# Application startup behavior mode.
+# Options: off | hidden | interface
+settings-startup: off
+
+# Vehicle model type.
+# Options: free | dreamer
+settings-car-model: free
+
+# Pedestrian warning sound behavior.
+# Options: original | off
+vehicle-pedestrian-warning: original

@@ -1,76 +1,92 @@
-# voboost-config-demo
+# Voboost Config Demo
 
-Reference Android application for the [voboost-config](../voboost-config)
-library. It loads a YAML configuration from assets, watches it for external
-changes, and renders the current values with red highlighting for fields that
-changed since the last reload.
+Single-activity Android demo that integrates the
+[`voboost-config`](../voboost-config) library. It loads a `config.yaml` from
+assets, displays the parsed configuration, and reacts to live file changes via
+`ConfigManager`'s file watcher.
 
-## Overview
+Part of the Voboost ecosystem; depends on [`voboost-config`](../voboost-config)
+(which in turn depends on [`voboost-components`](../voboost-components)).
 
-The demo is a single-activity app that wires `ConfigManager` to a simple
-text view. It demonstrates the full library lifecycle: copy the default
-config from assets, load it, start watching, react to `onConfigChanged` /
-`onConfigError`, and clean up on destroy.
+## What it demonstrates
 
-## Features
+- Copying a default `config.yaml` from assets to the app's data directory on first run
+- Loading and displaying the flat `Config` model
+- Starting `ConfigManager` file watching and receiving change diffs
+- Reloading the configuration on demand
+- Rendering a configuration error with the expected field format
 
-- YAML configuration loaded from `assets/config.yaml` into the app's private
-  data directory on first run
-- Real-time file change detection via voboost-config's `FileWatcher`
-- Visual highlighting of changed fields (red `ForegroundColorSpan`)
-- Manual reload button
-- `Result`-based error handling with user-facing status messages
+## config.yaml
 
-## Relationship to the Voboost ecosystem
+The demo ships a default config at
+[`src/main/assets/config.yaml`](src/main/assets/config.yaml). It uses the flat
+schema expected by the `Config` model:
 
-This app isThis app isThis app isThis app isThis app isThis app isThis app fig),
-which in turn dependwhich in turn dependwhich in turn dependwhich in turn dependwhich in turipped here mirrors the field set consumed by the Voboost
-application (`voboostapplication (`voboostapplication (`voboostapplication (`voboostapplication ( eapplication (`voboostapplicaton applract that
-runs on the real vehicle.
+```yaml
+settings-language: en
+settings-theme: free-dark
+settings-interface-shift-x: 0
+settings-interface-shift-y: 0
+settings-active-tab: interface
+vehicle-fuel-mode: electric
+vehicle-drive-mode: comfort
+interface-keyboard: enable-russian
+interface-widget-weather: enable-non-chineese-cities
+settings-startup: off
+settings-car-model: free
+vehicle-pedestrian-warning: original
+```
+
+See [`Config.kt`](../voboost-config/src/main/java/ru/voboost/config/models/Config.kt)
+for the full list of fields and enum values.
+
+## Integration example
+
+```kotlin
+class MainActivity : AppCompatActivity(), OnConfigChangeListener {
+    private val configManager = ConfigManager(this)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        configManager.copyDefaultConfigIfNeeded()
+        configManager.loadConfig()
+        configManager.startWatching(this)
+    }
+
+    override fun onConfigChanged(newConfig: Config, diff: Config) {
+        if (configManager.isFieldChanged(diff, "settingsTheme")) {
+            // apply new theme
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        configManager.stopWatching()
+    }
+}
+```
 
 ## Build
 
-The demo is a release-only Android application (the debug build variant is
-disabled). Build and install with:
+- Kotlin `2.0.21`, Android Gradle Plugin `8.7.3`
+- `compileSdk`/`targetSdk` 34, `minSdk` 28, Java/JVM target 11
+- Release-only: the debug variant is disabled via `androidComponents.beforeVariants`,
+  so `./gradlew build` produces a single release APK (signed with the debug keystore).
+  `-Pdebuggable=true` flips the release variant's `isDebuggable` flag for deep
+  debugging. The `-release` suffix is stripped from the output APK name.
+- Unit tests run on the release variant; the `testUnit` task aliases
+  `testReleaseUnitTest`.
+- Code style: ktlint, Checkstyle, and Spotless, applied via
+  [`voboost-codestyle`](../voboost-codestyle).
 
-```bash
-./gradlew assembleRelease
-./gradlew installRelease
+```sh
+./gradlew build      # assemble release APK + run unit tests
+./gradlew testUnit   # unit tests only
+./gradlew lintFix     # ktlint + spotless formatting
 ```
 
-Pass `Pass `Pass `Pass `Pass `Pass `Pabuggable` oPass `PaleasePass `Pass `Pass `Pass `Pass `Pass `Pabuggable` oPass `PaleasePass `Pass `Putput APK is named
-`voboost-config-demo.apk` (the `-release` suffix is stripped).
+## Ecosystem
 
-## Testing real-ti## Testing real-ti## Testing real-ti## Testing real-ti## Testing rfr## Testing real
-   ```bash
-   adb pull /data/data/ru.voboost.config.demo/files/config.yam   adb pull /data/data/ru.voboost.confid `config.yaml`.
-4. Push it back:
-
-   ```bash
-   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/datya   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/ru.   adb push config.yaml /datax:   adb push config.yaml ift   adb ehi   adb push config.yaml /data/data/ru.   adb push config.yaml /data/data/e    adb push config.yaml /data/datt-c   ig/README.md) for the full field
-reference.
-
-## Integrat##n example
-
-```kotlin
-val configManager = ConfigManager(context)
-
-configManager.copyDefaultConfigIfNeeded()
-configManager.loadConfig().fold(
-    onSuccess = { config -> displayConfig(config) },
-    onFailure = { error -> showError(error) },
-)
-
-val listener = object : OnConfigChangeListener {
-    override fun onConfigChanged(newConfig:     override fun onConfigChanged(newConfig:     override fun onConfigChanged(newConfig:     override fun onConfigChor(error: Exception)     overr runOnUiThread { showError(error) }
-    }
-}
-configManager.startWatching(listener)
-```
-
-## Requirements
-
-- Android API 28+
-- A checkout of `voboost-config` and `voboost-components` as sibling
-  directories (the Gradle settings include them via relative paths)
-- USB debugging enabled for on-device file editing tests
+- [`voboost-config`](../voboost-config) - the configuration library this demo uses
+- [`voboost-components`](../voboost-components) - shared UI components
+- [`voboost-codestyle`](../voboost-codestyle) - shared Gradle/code-style configuration
