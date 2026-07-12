@@ -1,5 +1,7 @@
 # Voboost Config Demo
 
+**English** | [Русский](README.ru.md)
+
 Single-activity Android demo that integrates the
 [`voboost-config`](../voboost-config) library. It loads a `config.yaml` from
 assets, displays the parsed configuration, and reacts to live file changes via
@@ -90,3 +92,10 @@ class MainActivity : AppCompatActivity(), OnConfigChangeListener {
 - [`voboost-config`](../voboost-config) - the configuration library this demo uses
 - [`voboost-components`](../voboost-components) - shared UI components
 - [`voboost-codestyle`](../voboost-codestyle) - shared Gradle/code-style configuration
+
+## License
+
+Dual-licensed:
+
+- [PolyForm Noncommercial 1.0.0](https://github.com/voboost/voboost-license/blob/main/LICENSE) — free for personal use
+- [Commercial license](https://github.com/voboost/voboost-license/blob/main/COMMERCIAL.md) — required otherwise
